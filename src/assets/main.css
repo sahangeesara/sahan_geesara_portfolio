@@ -1,7 +1,37 @@
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-@media (min-width: 1024px) {
+html, body {
+  background-color: #0d0d0d;
+  color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
 
-  #app {
-    padding-left:39px;
-  }
+/* Remove Bootstrap container left/right padding bleeding white */
+.container,
+.container-fluid,
+.container-sm,
+.container-md,
+.container-lg,
+.container-xl {
+  background-color: #0d0d0d;
+}
+
+/* Ensure no section shows white */
+section, div {
+  background-color: inherit;
+}
+
+#app {
+  background-color: #0d0d0d;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 }

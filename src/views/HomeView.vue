@@ -10,26 +10,27 @@ import Certificates from "@/components/Certificates.vue";
 </script>
 
 <template>
-  <div class="home container">
-    <div id="home"><Welcome /> </div>
-    <div id="about"><About /> </div>
-    <div class="container col-12" id="skills"><Skills /> </div>
-    <div id="project"><Project /> </div>
-    <div id="certificate"><Certificates /> </div>
-    <div id="education"><Education /> </div>
-    <div id="experience"><WorkExperience /> </div>
-    <div id="contact"><Contact /> </div>
-
+  <div class="home">
+    <section id="home"><Welcome /></section>
+    <section id="about"><About /></section>
+    <section id="skills"><Skills /></section>
+    <section id="project"><Project /></section>
+    <section id="certificate"><Certificates /></section>
+    <section id="education"><Education /></section>
+    <section id="experience"><WorkExperience /></section>
+    <section id="contact"><Contact /></section>
   </div>
 </template>
 
 <style scoped>
-@media (min-width: 1024px) {
-  .home {
-    margin-top: 60px;
-    height: 100vh;
-    align-items: center;
-  }
+.home {
+  background-color: #0d0d0d;
+  min-height: 100vh;
+  width: 100%;
 }
 
+/* Remove any section gaps / white flashes between components */
+section {
+  background-color: #0d0d0d;
+}
 </style>
