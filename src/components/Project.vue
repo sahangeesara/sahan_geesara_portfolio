@@ -99,7 +99,7 @@ const projects = [
   {
     title: 'Salary Management System',
     img: '/assets/Salary_management.png',
-    description: 'IRA Enterprises offers a secure online shopping experience with verified sellers across the country, ensuring safe and prompt delivery of orders.',
+    description: 'This modern, high-fidelity payroll management dashboard showcases advanced data visualization and UI/UX design skills using real-time analytics. It demonstrates a professional ability to architect complex enterprise systems that balance intricate financial logic with a clean, user-centric interface.',
     tags: ['Spring Boot', 'React', 'Bootstrap'],
     demo: 'https://spontaneous-lily-406fd6.netlify.app/'
   },
