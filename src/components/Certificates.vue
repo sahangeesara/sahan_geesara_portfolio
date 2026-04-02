@@ -132,7 +132,7 @@
             </svg>
           </button>
 
-          <div class="lb-caption">{{ lightbox.alt }} &mdash; {{ lightboxIndex + 1 }} / {{ certificates.length }}</div>
+  
         </div>
       </div>
     </Transition>
