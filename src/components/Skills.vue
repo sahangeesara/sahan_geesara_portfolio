@@ -77,7 +77,7 @@ const skillCategories = [
   background: #0d0d0d;
   color: #f0f0f0;
   padding: 6rem 1.5rem 5rem;
-  min-height: 100vh;
+  min-height: 50vh;
   box-sizing: border-box;
 }
 

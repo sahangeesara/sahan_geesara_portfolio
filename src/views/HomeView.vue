@@ -15,8 +15,8 @@ import Certificates from "@/components/Certificates.vue";
     <section id="about"><About /></section>
     <section id="skills"><Skills /></section>
     <section id="project"><Project /></section>
-    <section id="certificate"><Certificates /></section>
     <section id="education"><Education /></section>
+    <section id="certificate"><Certificates /></section>
     <section id="experience"><WorkExperience /></section>
     <section id="contact"><Contact /></section>
   </div>
@@ -25,7 +25,7 @@ import Certificates from "@/components/Certificates.vue";
 <style scoped>
 .home {
   background-color: #0d0d0d;
-  min-height: 100vh;
+  min-height: 50vh;
   width: 100%;
 }
 

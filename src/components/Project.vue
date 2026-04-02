@@ -80,8 +80,6 @@
       </button>
     </div>
 
-    <p class="pg-info">Page {{ currentPage }} of {{ totalPages }}</p>
-
   </section>
 </template>
 
@@ -91,6 +89,20 @@ import { ref, computed } from 'vue'
 const ITEMS_PER_PAGE = 4
 
 const projects = [
+  {
+    title: 'Hotel System',
+    img: '/assets/hotel.png',
+    description: 'Hotel management system for room booking and food ordering. Final year degree project.',
+    tags: ['Laravel', 'Angular', 'Bootstrap', 'CoreUI'],
+    demo: null
+  },
+  {
+    title: 'Salary Management System',
+    img: '/assets/Salary_management.png',
+    description: 'IRA Enterprises offers a secure online shopping experience with verified sellers across the country, ensuring safe and prompt delivery of orders.',
+    tags: ['Spring Boot', 'React', 'Bootstrap'],
+    demo: 'https://spontaneous-lily-406fd6.netlify.app/'
+  },
   {
     title: 'Online Store',
     img: '/assets/online_store.png',
@@ -117,13 +129,6 @@ const projects = [
     img: '/assets/chat_app.png',
     description: 'Real-time chat between two persons. An ongoing project to implement a full-featured chat application.',
     tags: ['Laravel', 'Vue.js', 'Bootstrap'],
-    demo: null
-  },
-  {
-    title: 'Hotel System',
-    img: '/assets/hotel.png',
-    description: 'Hotel management system for room booking and food ordering. Final year degree project.',
-    tags: ['Laravel', 'Angular', 'Bootstrap', 'CoreUI'],
     demo: null
   },
   {
@@ -192,11 +197,10 @@ function goToPage(p) { currentPage.value = p }
   background: #0d0d0d;
   color: #f0f0f0;
   padding: 6rem 1.5rem 5rem;
-  min-height: 100vh;
+  min-height: 50vh;
   box-sizing: border-box;
 }
 
-/* ── Header ── */
 .projects-header {
   text-align: center;
   margin-bottom: 3.5rem;
@@ -268,17 +272,20 @@ function goToPage(p) { currentPage.value = p }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Image ── */
+/* ── Image — KEY FIX ── */
 .project-img-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 200px;        /* fixed height — every card identical */
   overflow: hidden;
+  background: #111;     /* fallback while image loads */
+  flex-shrink: 0;
 }
 .project-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover;    /* fills the box, crops evenly */
+  object-position: top; /* show the top (UI) rather than cutting it off */
   display: block;
   transition: transform 0.4s ease;
 }
@@ -287,7 +294,7 @@ function goToPage(p) { currentPage.value = p }
 .project-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(13, 13, 13, 0.75);
+  background: rgba(13, 13, 13, 0.78);
   display: flex;
   align-items: center;
   justify-content: center;

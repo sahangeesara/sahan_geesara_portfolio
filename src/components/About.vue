@@ -167,7 +167,7 @@ onUnmounted(() => {
   padding: 6rem 1.5rem;
   background: #0d0d0d;
   color: #f0f0f0;
-  min-height: 100vh;
+  min-height: 50vh;
   box-sizing: border-box;
 }
 

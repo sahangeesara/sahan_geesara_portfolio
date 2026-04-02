@@ -22,18 +22,9 @@
         </p>
 
         <ul class="hero-traits">
-          <li>
-            <span class="trait-dot"></span>
-            Quick Learner
-          </li>
-          <li>
-            <span class="trait-dot"></span>
-            Team Player
-          </li>
-          <li>
-            <span class="trait-dot"></span>
-            Hard Worker
-          </li>
+          <li><span class="trait-dot"></span>Quick Learner</li>
+          <li><span class="trait-dot"></span>Team Player</li>
+          <li><span class="trait-dot"></span>Hard Worker</li>
         </ul>
 
         <div class="hero-socials">
@@ -70,7 +61,6 @@
 
     </div>
 
-    <!-- Background decoration -->
     <div class="hero-bg-orb orb1"></div>
     <div class="hero-bg-orb orb2"></div>
   </section>
@@ -79,21 +69,19 @@
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap');
 
-/* ── Section ── */
 .hero-section {
   font-family: 'DM Sans', sans-serif;
   background: #0d0d0d;
   color: #f0f0f0;
-  min-height: 100vh;
+  min-height: 50vh;
   display: flex;
   align-items: center;
-  padding: 6rem 1.5rem 4rem;
+  padding: 6rem 2.5rem 4rem;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
 }
 
-/* ── Background orbs ── */
 .hero-bg-orb {
   position: absolute;
   border-radius: 50%;
@@ -101,33 +89,26 @@
   pointer-events: none;
   z-index: 0;
 }
-.orb1 {
-  width: 420px; height: 420px;
-  background: rgba(224, 92, 42, 0.08);
-  top: -80px; left: -100px;
-}
-.orb2 {
-  width: 300px; height: 300px;
-  background: rgba(245, 166, 35, 0.06);
-  bottom: 0; right: -60px;
-}
+.orb1 { width: 420px; height: 420px; background: rgba(224,92,42,0.08); top: -80px; left: -100px; }
+.orb2 { width: 300px; height: 300px; background: rgba(245,166,35,0.06); bottom: 0; right: -60px; }
 
-/* ── Inner layout ── */
+
 .hero-inner {
   max-width: 1100px;
   margin: 0 auto;
   width: 100%;
   display: flex;
+  flex-direction: row;       
   align-items: center;
   justify-content: space-between;
-  gap: 3rem;
+  gap: 2rem;
   position: relative;
   z-index: 1;
 }
 
-/* ── Text side ── */
 .hero-text {
   flex: 1;
+  min-width: 0;
   animation: fadeSlide 0.8s ease both;
 }
 
@@ -139,18 +120,20 @@
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #e05c2a;
-  background: rgba(224, 92, 42, 0.1);
-  border: 1px solid rgba(224, 92, 42, 0.3);
+  color: #f34405;
+  background: rgba(224,92,42,0.1);
+  border: 1px solid rgba(224,92,42,0.3);
   border-radius: 100px;
   padding: 0.35rem 1rem;
   margin-bottom: 1.4rem;
+  white-space: nowrap;
 }
 .hero-tag::before {
   content: '';
   width: 7px; height: 7px;
   background: #e05c2a;
   border-radius: 50%;
+  flex-shrink: 0;
   animation: pulse 1.8s ease-in-out infinite;
 }
 @keyframes pulse {
@@ -158,9 +141,10 @@
   50%       { opacity: 0.4; transform: scale(0.7); }
 }
 
+/* Fluid font sizes so text fits on tablets without wrapping badly */
 .hero-name {
   font-family: 'Sora', sans-serif;
-  font-size: clamp(2.8rem, 7vw, 5rem);
+  font-size: clamp(1.8rem, 4.5vw, 5rem);
   font-weight: 700;
   color: #f8f8f8;
   letter-spacing: -0.03em;
@@ -170,8 +154,7 @@
 }
 
 .hero-underline {
-  width: 56px;
-  height: 4px;
+  width: 56px; height: 4px;
   background: linear-gradient(90deg, #e05c2a, #f5a623);
   border-radius: 2px;
   margin-bottom: 1.2rem;
@@ -180,19 +163,16 @@
 
 .hero-role {
   font-family: 'Sora', sans-serif;
-  font-size: 1.05rem;
+  font-size: clamp(0.8rem, 1.8vw, 1.05rem);
   font-weight: 600;
   color: #888;
   margin-bottom: 1.2rem;
   animation: fadeSlide 1.05s ease both;
 }
-.role-cursor {
-  color: #e05c2a;
-  opacity: 0.7;
-}
+.role-cursor { color: #e05c2a; opacity: 0.7; }
 
 .hero-bio {
-  font-size: 0.95rem;
+  font-size: clamp(0.78rem, 1.4vw, 0.95rem);
   color: #666;
   line-height: 1.7;
   max-width: 420px;
@@ -200,7 +180,6 @@
   animation: fadeSlide 1.1s ease both;
 }
 
-/* ── Traits ── */
 .hero-traits {
   list-style: none;
   padding: 0;
@@ -214,7 +193,7 @@
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  font-size: 0.88rem;
+  font-size: clamp(0.75rem, 1.3vw, 0.88rem);
   color: #aaa;
   font-weight: 500;
 }
@@ -225,7 +204,6 @@
   flex-shrink: 0;
 }
 
-/* ── Socials ── */
 .hero-socials {
   display: flex;
   gap: 0.75rem;
@@ -241,29 +219,29 @@
   border-radius: 12px;
   color: #888;
   text-decoration: none;
+  flex-shrink: 0;
   transition: color 0.25s, border-color 0.25s, background 0.25s, transform 0.25s;
 }
 .social-btn svg { width: 18px; height: 18px; }
 .social-btn:hover {
   color: #e05c2a;
-  border-color: rgba(224, 92, 42, 0.5);
-  background: rgba(224, 92, 42, 0.08);
+  border-color: rgba(224,92,42,0.5);
+  background: rgba(224,92,42,0.08);
   transform: translateY(-3px);
 }
 
-/* ── Image side ── */
+/* ── Image — fluid sizing keeps two columns on all screen sizes ── */
 .hero-img-wrap {
   position: relative;
   flex-shrink: 0;
   animation: zoomFloat 1.4s ease both;
 }
-
 .hero-img {
-  width: 300px;
-  height: 380px;
+  width: clamp(160px, 20vw, 300px);
+  height: clamp(210px, 26vw, 380px);
   object-fit: cover;
   border-radius: 140px 140px 120px 120px;
-  border: 3px solid rgba(224, 92, 42, 0.35);
+  border: 3px solid rgba(245,75,14,0.35);
   display: block;
   position: relative;
   z-index: 2;
@@ -271,20 +249,17 @@
 }
 .hero-img:hover {
   transform: scale(1.04) translateY(-6px);
-  box-shadow: 0 30px 60px rgba(224, 92, 42, 0.18);
+  box-shadow: 0 30px 60px rgba(224,92,42,0.18);
 }
-
 .hero-img-ring {
   position: absolute;
   inset: -14px;
   border-radius: 160px 160px 140px 140px;
-  border: 1px solid rgba(224, 92, 42, 0.15);
+  border: 1px solid rgba(224,92,42,0.15);
   z-index: 1;
   animation: spinRing 12s linear infinite;
 }
-@keyframes spinRing {
-  to { transform: rotate(360deg); }
-}
+@keyframes spinRing { to { transform: rotate(360deg); } }
 
 .hero-img-glow {
   position: absolute;
@@ -295,7 +270,6 @@
   pointer-events: none;
 }
 
-/* ── Animations ── */
 @keyframes fadeSlide {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -306,22 +280,19 @@
   100% { transform: scale(1) translateY(0); }
 }
 
-/* ── Responsive ── */
-@media (max-width: 820px) {
+/* ── Stack ONLY on small phones ── */
+@media (max-width: 500px) {
+  .hero-section { padding: 5rem 1.2rem 3rem; }
   .hero-inner {
     flex-direction: column-reverse;
     text-align: center;
-    gap: 2.5rem;
+    gap: 2rem;
   }
-  .hero-bio   { margin: 0 auto 1.5rem; }
+  .hero-bio       { margin: 0 auto 1.5rem; }
   .hero-traits li { justify-content: center; }
   .hero-socials   { justify-content: center; }
   .hero-underline { margin: 0 auto 1.2rem; }
-}
-
-@media (max-width: 480px) {
-  .hero-img { width: 240px; height: 300px; }
-  .hero-section { padding: 5rem 1rem 3rem; }
+  .hero-img       { width: 200px; height: 260px; }
 }
 </style>
 
