@@ -112,10 +112,10 @@ const projects = [
     demo: null
   },
   {
-    title: 'Phone Shop',
-    img: '/assets/MobileCity_Phone_Shope.png',
-    description: 'MobileCity offers nationwide online shopping with verified phone sellers, ensuring secure and fast delivery of orders.',
-    tags: ['Bootstrap', 'PHP'],
+    title: 'Chat App',
+    img: '/assets/chat_app.png',
+    description: 'Real-time chat between two persons. An ongoing project to implement a full-featured chat application.',
+    tags: ['Laravel', 'Vue.js', 'Bootstrap'],
     demo: null
   },
   {
@@ -123,13 +123,6 @@ const projects = [
     img: '/assets/blog.png',
     description: 'An education blog platform to improve and share knowledge across communities.',
     tags: ['Bootstrap', 'OOP PHP'],
-    demo: null
-  },
-  {
-    title: 'Chat App',
-    img: '/assets/chat_app.png',
-    description: 'Real-time chat between two persons. An ongoing project to implement a full-featured chat application.',
-    tags: ['Laravel', 'Vue.js', 'Bootstrap'],
     demo: null
   },
   {
@@ -159,13 +152,6 @@ const projects = [
     description: 'Cashier login, order placement with or without customer, product & customer management saved to local storage. ICET coursework.',
     tags: ['Bootstrap', 'HTML/CSS', 'JavaScript', 'SweetAlert2'],
     demo: 'https://sahangeesara.github.io/Ch_Post_system/index.html'
-  },
-  {
-    title: 'Burger Shop System',
-    img: '/assets/BugerShop_Sysytem.png',
-    description: 'File-handling data storage system for placing orders, searching customers, viewing order status, and finding best customers. ICET coursework.',
-    tags: ['Java'],
-    demo: null
   },
   {
     title: 'Tax Calculator System',
