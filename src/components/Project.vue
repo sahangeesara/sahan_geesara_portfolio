@@ -104,18 +104,18 @@ const projects = [
      demo: null
     // demo: 'https://spontaneous-lily-406fd6.netlify.app/'
   },
+   {
+    title: 'Chat App',
+    img: '/assets/chat_app.png',
+    description: 'Real-time chat between two persons. An ongoing project to implement a full-featured chat application.',
+    tags: ['Laravel', 'Vue.js', 'Bootstrap'],
+    demo: null
+  },
   {
     title: 'Online Store',
     img: '/assets/online_store.png',
     description: 'IRA Enterprises offers a secure online shopping experience with verified sellers across the country, ensuring safe and prompt delivery of orders.',
     tags: ['Laravel', 'Angular', 'Bootstrap', 'Angular Material'],
-    demo: null
-  },
-  {
-    title: 'Chat App',
-    img: '/assets/chat_app.png',
-    description: 'Real-time chat between two persons. An ongoing project to implement a full-featured chat application.',
-    tags: ['Laravel', 'Vue.js', 'Bootstrap'],
     demo: null
   },
   {

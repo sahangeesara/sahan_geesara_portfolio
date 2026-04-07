@@ -6,7 +6,7 @@ const menuOpen   = ref(false)
 const activeLink = ref('home')
 const scrolled   = ref(false)
 
-const sections = ['home','about','project','skills','education','certificate','experience','contact']
+const sections = ['home','about','skills','project','education','certificate','experience','contact']
 
 function toggleMenu() { menuOpen.value = !menuOpen.value }
 function closeMenu()  { menuOpen.value = false }
