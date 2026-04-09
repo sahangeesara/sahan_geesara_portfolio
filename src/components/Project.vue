@@ -1,16 +1,27 @@
 <template>
-  <section class="projects-section">
+  <section class="projects-section" aria-label="Projects section">
 
     <!-- Header -->
     <div class="projects-header">
       <span class="projects-tag">My Work</span>
       <h1 class="projects-title">My <span class="accent">Projects</span></h1>
       <div class="projects-underline"></div>
-      <p class="projects-sub">{{ projects.length }} projects built & shipped</p>
+      <p class="projects-sub">{{ filteredProjects.length }} of {{ projects.length }} projects</p>
+    </div>
+
+    <div class="projects-toolbar" aria-label="Project filters">
+      <label class="sr-only" for="project-filter">Filter by demo availability</label>
+      <select id="project-filter" v-model="demoFilter" class="toolbar-select">
+        <option value="all">All projects</option>
+        <option value="demo">With live demo</option>
+        <option value="private">Without demo</option>
+      </select>
+
+      <button type="button" class="toolbar-reset" @click="resetFilters">Reset</button>
     </div>
 
     <!-- Grid -->
-    <div class="projects-grid">
+    <div class="projects-grid" v-if="paginatedProjects.length">
       <div
         v-for="(project, i) in paginatedProjects"
         :key="project.title"
@@ -18,26 +29,22 @@
         :style="{ animationDelay: `${i * 0.08}s` }"
       >
         <!-- Image -->
-        <div class="project-img-wrap">
-          <img :src="project.img" :alt="project.title" class="project-img" loading="lazy" />
-          <div class="project-overlay">
-            <a
-              v-if="project.demo"
-              :href="project.demo"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="overlay-btn"
-              @click.stop
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-              </svg>
-              Live Demo
-            </a>
-            <span v-else class="overlay-label">Private Project</span>
-          </div>
-        </div>
+        <button
+          type="button"
+          class="project-img-wrap"
+          :aria-label="`Open larger preview for ${project.title}`"
+          @click="openProjectViewer(project)"
+        >
+          <img :src="getProjectImage(project)" :alt="project.title" class="project-img" loading="lazy" />
+
+          <span v-if="hasMultipleImages(project)" class="img-badge">
+            {{ getProjectMedia(project).length }} photos
+          </span>
+
+          <span class="project-overlay">
+            <span class="overlay-label overlay-cta">Click to view larger</span>
+          </span>
+        </button>
 
         <!-- Body -->
         <div class="project-body">
@@ -46,6 +53,22 @@
             <h3 class="project-title">{{ project.title }}</h3>
           </div>
           <p class="project-desc">{{ project.description }}</p>
+          <div class="project-actions">
+            <button type="button" class="action-btn primary" @click="openProjectViewer(project)">
+              View image
+            </button>
+            <a
+              v-if="project.demo"
+              :href="project.demo"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="action-btn secondary"
+              :aria-label="`Open live demo for ${project.title}`"
+            >
+              Live demo
+            </a>
+            <span v-else class="action-chip">No live demo</span>
+          </div>
           <div class="project-tags">
             <span v-for="tag in project.tags" :key="tag" class="project-tag">{{ tag }}</span>
           </div>
@@ -53,38 +76,131 @@
       </div>
     </div>
 
+    <div v-else class="projects-empty" role="status" aria-live="polite">
+      <h3>No matching projects</h3>
+      <p>Try changing the demo filter.</p>
+    </div>
+
     <!-- Pagination -->
-    <div class="projects-pagination">
-      <button class="pg-btn" :disabled="currentPage === 1" @click="prevPage">
+    <nav class="projects-pagination" aria-label="Projects pagination">
+      <button
+        type="button"
+        class="pg-btn"
+        :disabled="currentPage === 1"
+        aria-label="Go to previous project page"
+        @click="prevPage"
+      >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
         Prev
       </button>
 
-      <div class="pg-dots">
+      <fieldset class="pg-dots">
+        <legend class="sr-only">Select project page</legend>
         <button
           v-for="p in totalPages"
           :key="p"
+          type="button"
           class="pg-dot"
           :class="{ active: p === currentPage }"
+          :aria-label="`Go to page ${p}`"
+          :aria-current="p === currentPage ? 'page' : undefined"
           @click="goToPage(p)"
         ></button>
-      </div>
+      </fieldset>
 
-      <button class="pg-btn" :disabled="currentPage === totalPages" @click="nextPage">
+      <button
+        type="button"
+        class="pg-btn"
+        :disabled="currentPage === totalPages"
+        aria-label="Go to next project page"
+        @click="nextPage"
+      >
         Next
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="9 18 15 12 9 6"/>
         </svg>
       </button>
+    </nav>
+
+
+    <div v-if="activeProject" class="viewer-backdrop" @click.self="closeProjectViewer">
+      <dialog open class="viewer-panel" :aria-label="`Project preview for ${activeProject.title}`" @cancel.prevent="closeProjectViewer">
+        <div class="viewer-header">
+          <div>
+            <p class="viewer-kicker">Project preview</p>
+            <h3 class="viewer-title">{{ activeProject.title }}</h3>
+          </div>
+          <!-- Removed alignment controls -->
+          <button type="button" class="viewer-close" aria-label="Close preview" @click="closeProjectViewer">×</button>
+        </div>
+
+        <div class="viewer-media">
+          <button
+            v-if="hasMultipleImages(activeProject)"
+            type="button"
+            class="viewer-nav viewer-prev"
+            aria-label="Previous image"
+            @click="stepActiveViewer(-1)"
+          >
+            ‹
+          </button>
+
+          <img
+            :src="viewerImageSrc"
+            :alt="activeProject.title"
+            class="viewer-img"
+            @error="imageLoadError = true"
+            v-if="!imageLoadError"
+          />
+          <div v-else class="viewer-img-error">
+            <span>Image not available</span>
+          </div>
+
+          <button
+            v-if="hasMultipleImages(activeProject)"
+            type="button"
+            class="viewer-nav viewer-next"
+            aria-label="Next image"
+            @click="stepActiveViewer(1)"
+          >
+            ›
+          </button>
+        </div>
+
+        <div class="viewer-meta">
+          <p class="viewer-desc">{{ activeProject.description }}</p>
+          <span class="viewer-count">{{ viewerPositionLabel }}</span>
+        </div>
+
+        <div v-if="hasMultipleImages(activeProject)" class="viewer-thumbs" aria-label="Project images">
+          <button
+            v-for="(img, idx) in viewerMediaItems"
+            :key="img"
+            type="button"
+            class="viewer-thumb"
+            :class="{ active: idx === activeImageIndex }"
+            :aria-label="`Show image ${idx + 1}`"
+            @click="setActiveViewerImage(idx)"
+          >
+            <img :src="img" :alt="`${activeProject.title} thumbnail ${idx + 1}`" />
+          </button>
+        </div>
+
+        <div class="viewer-tags">
+          <span v-for="tag in activeProject.tags" :key="tag" class="viewer-tag">{{ tag }}</span>
+        </div>
+      </dialog>
     </div>
 
   </section>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
+
+defineOptions({ name: 'ProjectSection' })
 
 const ITEMS_PER_PAGE = 4
 
@@ -92,7 +208,7 @@ const projects = [
   {
     title: 'Hotel System',
     img: '/assets/hotel.png',
-    description: 'Hotel management system for room booking and food ordering. Final year degree project.',
+    description: 'Developed an integrated Hotel Management System to modernize operations by automating manual processes related to booking, guest records, billing, and service coordination, leading to improved efficiency, data accuracy, and faster decision-making. This is my campus final year project.',
     tags: ['Laravel', 'Angular', 'Bootstrap', 'CoreUI'],
     demo: null
   },
@@ -107,28 +223,32 @@ const projects = [
    {
     title: 'Chat App',
     img: '/assets/chat_app.png',
-    description: 'Real-time chat between two persons. An ongoing project to implement a full-featured chat application.',
+    description: 'I have experience in PHP programming and web application development using Laravel, Vue JS, WebSocket (Pusher),\n' +
+        'and Bootstrap, with a focus on real-time chat systems, and I use tools like IntelliJ IDEA and PhpStorm for coding and\n' +
+        'project management. I have developed a chat application that allows users to register, log in, and engage in real-time conversations. The backend is built with Laravel, which handles user authentication, message storage, and WebSocket integration using Pusher for real-time communication. The frontend is developed with Vue JS and styled with Bootstrap, providing a responsive and user-friendly interface for seamless chatting experiences.',
     tags: ['Laravel', 'Vue.js', 'Bootstrap'],
     demo: null
   },
   {
     title: 'Online Store',
     img: '/assets/online_store.png',
-    description: 'IRA Enterprises offers a secure online shopping experience with verified sellers across the country, ensuring safe and prompt delivery of orders.',
+    images: ['/assets/online_store.png', '/assets/online_store2.png','/assets/online_store3.png','/assets/online_store4.png','/assets/online_store5.png'],
+    description: 'This project is an online store platform built with Angular (frontend) and Laravel (backend). It allows users to register, log in, and shop for products such as phones, vehicles, and laptops. The backend provides secure authentication using JWT, manages user and product data, and exposes RESTful APIs for the frontend. After login, users can view and update their profile details, manage their cart, and complete purchases. The system also includes features for password reset, contact forms, and profile management, making it a comprehensive solution for an e-commerce application.',
     tags: ['Laravel', 'Angular', 'Bootstrap', 'Angular Material'],
     demo: null
   },
   {
-    title: 'Blog System',
-    img: '/assets/blog.png',
-    description: 'An education blog platform to improve and share knowledge across communities.',
-    tags: ['Bootstrap', 'OOP PHP'],
+    title: 'Education Blog Platform',
+    img: '/assets/blog1.png',
+    images: ['/assets/blog1.png', '/assets/blog2.png'],
+    description: 'This project is a PHP-based blog system that allows users to create, view, edit, and delete blog posts with images and descriptions. It features user authentication, an admin panel, and a responsive design. The system supports AI-generated post descriptions, enforces required fields for posts, and includes pagination for improved usability. The codebase is organized with controllers, components, and configuration files, making it easy to maintain and extend.',
+    tags: ['Bootstrap', 'PHP', 'MySQL'],
     demo: null
   },
   {
     title: 'Bus Booking System',
     img: '/assets/Bus_System.png',
-    description: 'Bus booking system for seat reservation and ticket management.',
+    description: 'This Bus Booking System is a web-based application designed to streamline the management and reservation of bus seats for both administrators and customers. Administrators and agents can manage customer records, bus schedules, and generate reports, while regular users can view their personal profiles and book seats. The system features clear role-based access, ensuring that only authorized users can access sensitive management functions, and provides a user-friendly interface for efficient booking and administration..',
     tags: ['PHP', 'HTML/CSS', 'JavaScript'],
     demo: null
   },
@@ -163,16 +283,157 @@ const projects = [
 ]
 
 const currentPage = ref(1)
+const demoFilter = ref('all')
+const projectMediaIndexes = ref({})
+const activeProject = ref(null)
+const activeImageIndex = ref(0)
+// Removed: const imageAlignment = ref('center')
 
-const totalPages = computed(() => Math.ceil(projects.length / ITEMS_PER_PAGE))
+const FALLBACK_IMAGE = '/assets/placeholder.png'
+const viewerImageSrc = computed(() => {
+  if (!activeProject.value) return FALLBACK_IMAGE
+  const media = viewerMediaItems.value
+  return media[activeImageIndex.value] || activeProject.value.img || FALLBACK_IMAGE
+})
+
+const imageLoadError = ref(false)
+
+const filteredProjects = computed(() => {
+  return projects.filter((project) => {
+    const matchesDemo =
+      demoFilter.value === 'all' ||
+      (demoFilter.value === 'demo' && Boolean(project.demo)) ||
+      (demoFilter.value === 'private' && !project.demo)
+
+    return matchesDemo
+  })
+})
+
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredProjects.value.length / ITEMS_PER_PAGE)))
 const startIndex = computed(() => (currentPage.value - 1) * ITEMS_PER_PAGE)
 const paginatedProjects = computed(() =>
-  projects.slice(startIndex.value, startIndex.value + ITEMS_PER_PAGE)
+  filteredProjects.value.slice(startIndex.value, startIndex.value + ITEMS_PER_PAGE)
 )
+watch(demoFilter, () => {
+  currentPage.value = 1
+})
 
-function prevPage() { if (currentPage.value > 1) currentPage.value-- }
-function nextPage() { if (currentPage.value < totalPages.value) currentPage.value++ }
-function goToPage(p) { currentPage.value = p }
+watch(totalPages, (pages) => {
+  if (currentPage.value > pages) {
+    currentPage.value = pages
+  }
+})
+
+function setPage(page) {
+  currentPage.value = Math.min(Math.max(page, 1), totalPages.value)
+}
+
+function resetFilters() {
+  demoFilter.value = 'all'
+}
+
+function getProjectMedia(project) {
+  if (!project) return []
+
+  const media = Array.isArray(project.images) && project.images.length
+    ? project.images
+    : [project.img]
+
+  return [...new Set(media.filter(Boolean))]
+}
+
+function hasMultipleImages(project) {
+  return getProjectMedia(project).length > 1
+}
+
+function getProjectImageIndex(project) {
+  if (!hasMultipleImages(project)) return 0
+  const media = getProjectMedia(project)
+  const stored = projectMediaIndexes.value[project.title] || 0
+  return Math.min(Math.max(stored, 0), media.length - 1)
+}
+
+function getProjectImage(project) {
+  if (!hasMultipleImages(project)) return project.img
+  const media = getProjectMedia(project)
+  return media[getProjectImageIndex(project)] || project.img
+}
+
+function setProjectImageIndex(project, index) {
+  if (!hasMultipleImages(project)) return
+  const total = getProjectMedia(project).length
+  const nextIndex = (index + total) % total
+  projectMediaIndexes.value = { ...projectMediaIndexes.value, [project.title]: nextIndex }
+}
+
+function openProjectViewer(project) {
+  activeProject.value = project
+  activeImageIndex.value = getProjectImageIndex(project)
+}
+
+function closeProjectViewer() {
+  activeProject.value = null
+}
+
+function setActiveViewerImage(index) {
+  if (!activeProject.value) return
+  const media = viewerMediaItems.value
+  if (!media.length) return
+  activeImageIndex.value = Math.min(Math.max(index, 0), media.length - 1)
+  setProjectImageIndex(activeProject.value, index)
+}
+
+function stepActiveViewer(step) {
+  if (!activeProject.value || !hasMultipleImages(activeProject.value)) return
+  setActiveViewerImage(activeImageIndex.value + step)
+}
+
+const viewerMediaItems = computed(() => getProjectMedia(activeProject.value))
+
+/* Removed alignment logic:
+const objectPositionMap = {
+  center: 'center center',
+  top: 'top center',
+  bottom: 'bottom center',
+  left: 'center left',
+  right: 'center right',
+}
+
+const viewerObjectPosition = computed(() => objectPositionMap[imageAlignment.value] || 'center center')
+*/
+
+
+const viewerPositionLabel = computed(() => {
+  if (!activeProject.value) return ''
+  if (!hasMultipleImages(activeProject.value)) return '1 image'
+  return `${activeImageIndex.value + 1} / ${viewerMediaItems.value.length}`
+})
+
+function onKeydown(e) {
+  if (!activeProject.value) return
+  if (e.key === 'Escape') closeProjectViewer()
+  if (e.key === 'ArrowLeft') stepActiveViewer(-1)
+  if (e.key === 'ArrowRight') stepActiveViewer(1)
+}
+
+function prevPage() { setPage(currentPage.value - 1) }
+function nextPage() { setPage(currentPage.value + 1) }
+function goToPage(page) { setPage(page) }
+
+watch(activeProject, (project) => {
+  document.body.style.overflow = project ? 'hidden' : ''
+})
+
+onUnmounted(() => {
+  document.body.style.overflow = ''
+})
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('keydown', onKeydown)
+  onUnmounted(() => {
+    window.removeEventListener('keydown', onKeydown)
+  })
+}
 </script>
 
 <style scoped>
@@ -190,7 +451,7 @@ function goToPage(p) { currentPage.value = p }
 
 .projects-header {
   text-align: center;
-  margin-bottom: 3.5rem;
+  margin-bottom: 2rem;
 }
 .projects-tag {
   display: inline-block;
@@ -199,7 +460,7 @@ function goToPage(p) { currentPage.value = p }
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: #e05c2a;
-  background: rgba(224, 92, 42, 0.1);
+  background: rgba(224, 92, 42, 0.16);
   border: 1px solid rgba(224, 92, 42, 0.3);
   border-radius: 100px;
   padding: 0.35rem 1rem;
@@ -222,9 +483,56 @@ function goToPage(p) { currentPage.value = p }
   margin: 0 auto 1rem;
 }
 .projects-sub {
-  color: #666;
+  color: #8b8b8b;
   font-size: 0.88rem;
   margin: 0;
+}
+
+.projects-toolbar {
+  max-width: 1080px;
+  margin: 0 auto 1.4rem;
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) auto;
+  gap: 0.75rem;
+  justify-content: center;
+}
+.toolbar-select,
+.toolbar-reset {
+  border: 1px solid #323232;
+  background: #171717;
+  color: #f0f0f0;
+  border-radius: 10px;
+  min-height: 42px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+}
+.toolbar-select {
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+}
+.toolbar-reset {
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+.toolbar-reset:hover {
+  border-color: rgba(224, 92, 42, 0.5);
+  color: #ff9a66;
+}
+.toolbar-select:focus-visible,
+.toolbar-reset:focus-visible {
+  outline: 2px solid rgba(224, 92, 42, 0.8);
+  outline-offset: 2px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 
 /* ── Grid ── */
@@ -236,12 +544,15 @@ function goToPage(p) { currentPage.value = p }
   gap: 1.4rem;
 }
 @media (max-width: 720px) {
+  .projects-toolbar {
+    grid-template-columns: 1fr;
+  }
   .projects-grid { grid-template-columns: 1fr; }
 }
 
 /* ── Card ── */
 .project-card {
-  background: #161616;
+  background: #141414;
   border: 1px solid #242424;
   border-radius: 18px;
   overflow: hidden;
@@ -254,6 +565,10 @@ function goToPage(p) { currentPage.value = p }
   border-color: rgba(224, 92, 42, 0.45);
   transform: translateY(-4px);
 }
+
+.project-card:focus-within {
+  border-color: rgba(224, 92, 42, 0.55);
+}
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(22px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -261,59 +576,115 @@ function goToPage(p) { currentPage.value = p }
 
 /* ── Image — KEY FIX ── */
 .project-img-wrap {
+  appearance: none;
+  border: 0;
+  padding: 0;
   position: relative;
   width: 100%;
-  height: 200px;        /* fixed height — every card identical */
+  height: 220px;
+  max-width: 100%;
+  max-height: 220px;
   overflow: hidden;
-  background: #111;     /* fallback while image loads */
+  background: #111;
+  color: inherit;
   flex-shrink: 0;
+  cursor: zoom-in;
+  outline: none;
+  display: block;
+  text-align: inherit;
 }
 .project-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;    /* fills the box, crops evenly */
-  object-position: top; /* show the top (UI) rather than cutting it off */
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  object-position: center;
   display: block;
   transition: transform 0.4s ease;
 }
-.project-card:hover .project-img { transform: scale(1.05); }
+.project-card:hover .project-img { transform: scale(1.04); }
+.project-img-wrap:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(224, 92, 42, 0.85);
+}
 
 .project-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(13, 13, 13, 0.78);
+  background: linear-gradient(180deg, rgba(13, 13, 13, 0.08), rgba(13, 13, 13, 0.7));
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.3s;
 }
-.project-card:hover .project-overlay { opacity: 1; }
+.overlay-cta {
+  backdrop-filter: blur(8px);
+}
 
-.overlay-btn {
+.img-badge {
+  position: absolute;
+  left: 0.8rem;
+  top: 0.8rem;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  background: #e05c2a;
-  color: #fff;
-  text-decoration: none;
+  gap: 0.3rem;
+  background: rgba(13, 13, 13, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 0.38rem 0.7rem;
+  color: #f3f3f3;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.2rem;
+}
+.action-btn,
+.action-chip {
+  min-height: 38px;
+  border-radius: 12px;
   font-size: 0.82rem;
   font-weight: 600;
-  padding: 0.55rem 1.1rem;
-  border-radius: 100px;
-  transition: background 0.2s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.9rem;
 }
-.overlay-btn:hover {
-  background: #c94f22;
-  transform: scale(1.05);
+.action-btn {
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+.action-btn:hover {
+  transform: translateY(-1px);
+}
+.action-btn.primary {
+  background: linear-gradient(135deg, #e05c2a, #f07a3a);
+  color: #fff;
+}
+.action-btn.secondary {
+  background: #181818;
+  color: #dedede;
+  border-color: #303030;
+}
+.action-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #2d2d2d;
+  color: #8b8b8b;
 }
 
 .overlay-label {
   font-size: 0.78rem;
-  color: #666;
+  color: #f5f5f5;
   font-weight: 500;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid #333;
+  background: rgba(13, 13, 13, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 100px;
   padding: 0.4rem 1rem;
 }
@@ -349,7 +720,7 @@ function goToPage(p) { currentPage.value = p }
 
 .project-desc {
   font-size: 0.83rem;
-  color: #777;
+  color: #b4b4b4;
   line-height: 1.65;
   margin: 0;
   flex: 1;
@@ -378,13 +749,34 @@ function goToPage(p) { currentPage.value = p }
   border-color: rgba(224, 92, 42, 0.3);
 }
 
+.projects-empty {
+  max-width: 1080px;
+  margin: 0 auto 2.2rem;
+  background: #141414;
+  border: 1px solid #2b2b2b;
+  border-radius: 14px;
+  padding: 1.5rem;
+  text-align: center;
+}
+.projects-empty h3 {
+  margin: 0 0 0.35rem;
+  color: #f0f0f0;
+  font-size: 1rem;
+}
+.projects-empty p {
+  margin: 0;
+  color: #a8a8a8;
+  font-size: 0.86rem;
+}
+
 /* ── Pagination ── */
 .projects-pagination {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 1.5rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 .pg-btn {
   display: inline-flex;
@@ -408,6 +800,11 @@ function goToPage(p) { currentPage.value = p }
   transform: translateY(-1px);
 }
 .pg-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.pg-btn:focus-visible,
+.pg-dot:focus-visible {
+  outline: 2px solid rgba(224, 92, 42, 0.8);
+  outline-offset: 2px;
+}
 
 .pg-dots {
   display: flex;
@@ -428,10 +825,254 @@ function goToPage(p) { currentPage.value = p }
   background: #e05c2a;
   transform: scale(1.3);
 }
-.pg-info {
-  text-align: center;
-  font-size: 0.78rem;
-  color: #555;
+
+fieldset.pg-dots {
+  border: 0;
   margin: 0;
+  padding: 0;
+  min-inline-size: 0;
+}
+
+/* ── Viewer ── */
+.viewer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1rem 1rem;
+  overflow-y: auto;
+}
+.viewer-panel {
+  width: min(980px, 98vw);
+  max-height: calc(100vh - 2.5rem);
+  overflow: auto;
+  background: #121212;
+  border: 1px solid #2d2d2d;
+  border-radius: 22px;
+  padding: 1.2rem 1.2rem 1.5rem 1.2rem;
+  margin: 0;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+}
+.viewer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+  flex-wrap: wrap;
+  position: relative;
+  min-height: 48px;
+  z-index: 10;
+}
+.viewer-kicker {
+  margin: 0 0 0.2rem;
+  color: #e05c2a;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.viewer-title {
+  margin: 0;
+  color: #f4f4f4;
+  font-size: 1.35rem;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.viewer-close {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #e05c2a;
+  border-radius: 16px;
+  background: #181818;
+  color: #fff;
+  font-size: 2.1rem;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 100;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.viewer-close:hover, .viewer-close:focus-visible {
+  background: #e05c2a;
+  color: #fff;
+  border-color: #fff;
+  outline: 2px solid #fff;
+}
+.viewer-align-controls {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  margin-left: 1.2rem;
+}
+.viewer-align-controls button {
+  background: #191919;
+  color: #e05c2a;
+  border: 1px solid #2d2d2d;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.viewer-align-controls button.active,
+.viewer-align-controls button:focus-visible {
+  background: #e05c2a;
+  color: #fff;
+  outline: 2px solid #e05c2a;
+}
+.viewer-media {
+  width: 480px;
+  height: 320px;
+  max-width: 90vw;
+  max-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.2rem auto;
+  background: #181818;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.viewer-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.viewer-img-error {
+  width: 100%;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #222;
+  color: #fff;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+}
+.viewer-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(16, 16, 16, 0.75);
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.viewer-prev { left: 0.75rem; }
+.viewer-next { right: 0.75rem; }
+.viewer-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.9rem 0 1rem;
+}
+.viewer-desc {
+  margin: 0;
+  color: #b7b7b7;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.viewer-count {
+  color: #b4b4b4;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.viewer-thumbs {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.viewer-thumb {
+  width: 74px;
+  height: 54px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #151515;
+  cursor: pointer;
+}
+.viewer-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.viewer-thumb.active {
+  border-color: #e05c2a;
+}
+.viewer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.viewer-tag {
+  font-size: 0.72rem;
+  color: #efefef;
+  background: #1b1b1b;
+  border: 1px solid #2c2c2c;
+  border-radius: 100px;
+  padding: 0.2rem 0.65rem;
+}
+
+
+@media (max-width: 720px) {
+  .project-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .action-btn,
+  .action-chip {
+    width: 100%;
+  }
+  .viewer-panel {
+    padding: 0.85rem;
+    border-radius: 18px;
+  }
+  .viewer-media {
+    padding-top: 0.45rem;
+  }
+  .viewer-img {
+    max-height: 58vh;
+  }
+  .viewer-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .viewer-nav {
+    width: 38px;
+    height: 38px;
+  }
+  .viewer-prev { left: 0.4rem; }
+  .viewer-next { right: 0.4rem; }
 }
 </style>
