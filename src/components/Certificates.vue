@@ -115,6 +115,7 @@ const certificates = [
   { src: '/assets/Certificates/15.png',  alt: 'Certificate 15' },
   { src: '/assets/Certificates/16.png',  alt: 'Certificate 16' },
   { src: '/assets/Certificates/17.png',  alt: 'Certificate 17' },
+  { src: '/assets/Certificates/18.png',  alt: 'Certificate 18' },
 ]
 
 const total = certificates.length
