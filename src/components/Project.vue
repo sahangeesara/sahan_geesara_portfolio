@@ -216,7 +216,7 @@ const projects = [
     title: 'Salary Management System',
     img: '/assets/Salary_management.png',
     description: 'This modern, high-fidelity payroll management dashboard showcases advanced data visualization and UI/UX design skills using real-time analytics. It demonstrates a professional ability to architect complex enterprise systems that balance intricate financial logic with a clean, user-centric interface.',
-    tags: ['Spring Boot', 'React', 'Bootstrap'],
+    tags: ['Spring Boot', 'React', 'Tailwind css'],
      demo: null
     // demo: 'https://spontaneous-lily-406fd6.netlify.app/'
   },
@@ -228,6 +228,16 @@ const projects = [
         'project management. I have developed a chat application that allows users to register, log in, and engage in real-time conversations. The backend is built with Laravel, which handles user authentication, message storage, and WebSocket integration using Pusher for real-time communication. The frontend is developed with Vue JS and styled with Bootstrap, providing a responsive and user-friendly interface for seamless chatting experiences.',
     tags: ['Laravel', 'Vue.js', 'Bootstrap'],
     demo: null
+  },
+   {
+    title: 'StoryCraft',
+    img: '/assets/StoryCraft.png',
+    description: 'StoryCraft is a Next.js-based content management platform that combines blog publishing with premium subscription features powered by Stripe and Supabase.\n'+
+    ' The application offers a sophisticated "Creator Blog Studio" with Pro-tier access control, allowing creators to manage articles with draft and published states, track analytics, \n'+
+    'and control content visibility through role-based permissions (Pro users and Admin privileges). Built with modern technologies including React 19, TypeScript, and Tailwind CSS,\n'+
+    ' it features an elegant dark-themed UI with gradient accents and provides exclusive article access, creation tools, and comprehensive content management capabilities for authenticated users. The platform integrates authentication, payment processing, and database management to deliver a complete subscription-based blogging solution with real-time article previews, tag categorization, and admin-level content moderation.',
+    tags: ['Next.js', 'Node.js', 'Tailwind css','Stripe API','SuperBase'],
+    demo: 'https://storycraft-omega.vercel.app/'
   },
   {
     title: 'Online Store',
