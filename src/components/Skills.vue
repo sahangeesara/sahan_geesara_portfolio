@@ -49,17 +49,17 @@ const skillCategories = [
   {
     title: 'Frontend',
     icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
-    skills: ['Vue.js', 'Angular', 'React', 'JavaScript']
+    skills: ['Vue.js', 'Angular', 'React','Next.js', 'JavaScript', 'TypeScript', 'Tailwind CSS', 'Bootstrap']
   },
   {
     title: 'Backend',
     icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`,
-    skills: ['PHP', 'Laravel', 'Java', 'Spring Boot','Python']
+    skills: ['PHP', 'Laravel', 'Java', 'Spring Boot','Python','Node.js']
   },
   {
     title: 'Database',
     icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>`,
-    skills: ['MySQL', 'MsSQL','MonogoDB']
+    skills: ['MySQL', 'MsSQL','MonogoDB','SuperBase']
   },
   {
     title: 'Tools',
