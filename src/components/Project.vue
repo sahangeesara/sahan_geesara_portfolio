@@ -227,7 +227,7 @@ const projects = [
         'and Bootstrap, with a focus on real-time chat systems, and I use tools like IntelliJ IDEA and PhpStorm for coding and\n' +
         'project management. I have developed a chat application that allows users to register, log in, and engage in real-time conversations. The backend is built with Laravel, which handles user authentication, message storage, and WebSocket integration using Pusher for real-time communication. The frontend is developed with Vue JS and styled with Bootstrap, providing a responsive and user-friendly interface for seamless chatting experiences.',
     tags: ['Laravel', 'Vue.js', 'Bootstrap'],
-    demo: null
+    demo: 'https://www.skytalk.chat/'
   },
    {
     title: 'StoryCraft',
