@@ -118,6 +118,11 @@ const certificates = [
   { src: '/assets/Certificates/18.png',  alt: 'Certificate 18' },
   { src: '/assets/Certificates/19.png',  alt: 'Certificate 19' },
   { src: '/assets/Certificates/20.png',  alt: 'Certificate 20' },
+  { src: '/assets/Certificates/21.png',  alt: 'Certificate 21' },
+  { src: '/assets/Certificates/22.png',  alt: 'Certificate 22' },
+  { src: '/assets/Certificates/23.png',  alt: 'Certificate 23' },
+  { src: '/assets/Certificates/24.png',  alt: 'Certificate 24' },
+  { src: '/assets/Certificates/25.png',  alt: 'Certificate 25' },
 ]
 
 const total = certificates.length
